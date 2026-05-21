@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { sendOrderConfirmationEmail } from "@/lib/email/order-confirmation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -85,13 +86,20 @@ export async function PATCH(request: NextRequest) {
     const order_id = body.order_id as string;
     const customer_name = body.customer_name as string;
     const customer_phone = body.customer_phone as string;
-    const customer_email = body.customer_email as string;
+    const customer_email = (body.customer_email as string | undefined)?.trim() ?? "";
     const delivery_address = body.delivery_address as string;
     const notes = (body.notes as string) || null;
 
     if (!order_id || !customer_name || !customer_phone || !delivery_address) {
       return NextResponse.json(
         { error: "Бүх талбарыг бөглөнө үү" },
+        { status: 400 },
+      );
+    }
+
+    if (customer_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer_email)) {
+      return NextResponse.json(
+        { error: "И-мэйл хаяг буруу байна" },
         { status: 400 },
       );
     }
@@ -103,13 +111,13 @@ export async function PATCH(request: NextRequest) {
       .update({
         customer_name,
         customer_phone,
-        customer_email: customer_email || "",
+        customer_email,
         delivery_address,
         notes,
         status: "confirmed",
       })
       .eq("id", order_id)
-      .select("id")
+      .select("id, customer_name, customer_email, quantity_kg, total_amount, delivery_address")
       .single();
 
     if (orderError) {
@@ -118,6 +126,22 @@ export async function PATCH(request: NextRequest) {
         { error: "Захиалга шинэчлэхэд алдаа гарлаа" },
         { status: 500 },
       );
+    }
+
+    if (customer_email) {
+      try {
+        await sendOrderConfirmationEmail({
+          to: customer_email,
+          name: customer_name,
+          orderId: order.id,
+          quantityKg: order.quantity_kg,
+          amount: order.total_amount,
+          address: delivery_address,
+        });
+      } catch (emailError) {
+        console.error("Email send error:", emailError);
+        // Order is saved — don't block confirmation if email fails
+      }
     }
 
     return NextResponse.json({ success: true, order_id: order.id });

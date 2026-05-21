@@ -32,6 +32,7 @@ export default function Home() {
   const [selectedKg, setSelectedKg] = useState<number>(1);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [orderId, setOrderId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,15 +100,21 @@ export default function Home() {
     setIsSubmitting(true);
 
     try {
+      const payload: Record<string, string> = {
+        order_id: orderId,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        delivery_address: deliveryAddress,
+      };
+
+      if (customerEmail.trim()) {
+        payload.customer_email = customerEmail.trim();
+      }
+
       const response = await fetch("/api/orders", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          order_id: orderId,
-          customer_name: customerName,
-          customer_phone: customerPhone,
-          delivery_address: deliveryAddress,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -159,6 +166,8 @@ export default function Home() {
             setCustomerName={setCustomerName}
             customerPhone={customerPhone}
             setCustomerPhone={setCustomerPhone}
+            customerEmail={customerEmail}
+            setCustomerEmail={setCustomerEmail}
             deliveryAddress={deliveryAddress}
             setDeliveryAddress={setDeliveryAddress}
             isSubmitting={isSubmitting}
@@ -427,6 +436,8 @@ function Step3Delivery({
   setCustomerName,
   customerPhone,
   setCustomerPhone,
+  customerEmail,
+  setCustomerEmail,
   deliveryAddress,
   setDeliveryAddress,
   isSubmitting,
@@ -436,6 +447,8 @@ function Step3Delivery({
   setCustomerName: (v: string) => void;
   customerPhone: string;
   setCustomerPhone: (v: string) => void;
+  customerEmail: string;
+  setCustomerEmail: (v: string) => void;
   deliveryAddress: string;
   setDeliveryAddress: (v: string) => void;
   isSubmitting: boolean;
@@ -470,6 +483,17 @@ function Step3Delivery({
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
             placeholder="9911xxxx"
+            className={inputClass}
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-amber-800">И-мэйл</span>
+          <input
+            type="email"
+            value={customerEmail}
+            onChange={(e) => setCustomerEmail(e.target.value)}
+            placeholder="И-мэйл (заавал биш)"
             className={inputClass}
           />
         </label>
