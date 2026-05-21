@@ -89,13 +89,7 @@ export async function PATCH(request: NextRequest) {
     const delivery_address = body.delivery_address as string;
     const notes = (body.notes as string) || null;
 
-    if (
-      !order_id ||
-      !customer_name ||
-      !customer_phone ||
-      !customer_email ||
-      !delivery_address
-    ) {
+    if (!order_id || !customer_name || !customer_phone || !delivery_address) {
       return NextResponse.json(
         { error: "Бүх талбарыг бөглөнө үү" },
         { status: 400 },
@@ -109,7 +103,7 @@ export async function PATCH(request: NextRequest) {
       .update({
         customer_name,
         customer_phone,
-        customer_email,
+        customer_email: customer_email || "",
         delivery_address,
         notes,
         status: "confirmed",

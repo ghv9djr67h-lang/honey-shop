@@ -10,37 +10,7 @@ const PRODUCTS = [
 
 const PRODUCT_NAME = "Олон цэцгийн 100% цэвэр зөгийн бал";
 
-const PRODUCT_IMAGES = [
-  {
-    alt: "ТИТЭМ зөгийн бал — үндсэн зураг",
-    gradient: "from-amber-400 via-amber-500 to-orange-600",
-    label: "Үндсэн",
-  },
-  {
-    alt: "ТИТЭМ зөгийн бал — савлагаа",
-    gradient: "from-yellow-300 via-amber-400 to-amber-600",
-    label: "Савлагаа",
-  },
-  {
-    alt: "ТИТЭМ зөгийн бал — байгалийн",
-    gradient: "from-orange-300 via-amber-500 to-yellow-600",
-    label: "Байгалийн",
-  },
-  {
-    alt: "ТИТЭМ зөгийн бал — чанар",
-    gradient: "from-amber-200 via-orange-400 to-amber-700",
-    label: "Чанар",
-  },
-] as const;
-
-const FEATURES = ["100% цэвэр", "Байгалийн", "Монгол"] as const;
-
-const STEPS = [
-  "Бараа сонгох",
-  "Төлбөр төлөх",
-  "Хүргэлтийн мэдээлэл",
-  "Баярлалаа",
-] as const;
+const STEPS = ["Бараа сонгох", "Төлбөр", "Хүргэлтийн мэдээлэл", "Баярлалаа"] as const;
 
 const BANK_ACCOUNT =
   process.env.NEXT_PUBLIC_BANK_ACCOUNT ?? "[BANK_ACCOUNT_PLACEHOLDER]";
@@ -59,13 +29,10 @@ function formatOrderNumber(id: string) {
 
 export default function Home() {
   const [step, setStep] = useState<Step>(1);
-  const [galleryIndex, setGalleryIndex] = useState(0);
   const [selectedKg, setSelectedKg] = useState<number>(1);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [notes, setNotes] = useState("");
   const [orderId, setOrderId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +42,6 @@ export default function Home() {
     [selectedKg],
   );
 
-  // Poll payment status on step 2 — advances to step 3 when webhook marks order paid
   useEffect(() => {
     if (step !== 2 || !orderId) return;
 
@@ -86,12 +52,9 @@ export default function Home() {
         const res = await fetch(`/api/orders?order_id=${orderId}`);
         const data = await res.json();
         if (!active || !res.ok) return;
-
-        if (data.order?.payment_status === "paid") {
-          setStep(3);
-        }
+        if (data.order?.payment_status === "paid") setStep(3);
       } catch {
-        // silently retry on next interval
+        // retry on next interval
       }
     }
 
@@ -119,10 +82,7 @@ export default function Home() {
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error ?? "Захиалга үүсгэхэд алдаа гарлаа");
-      }
+      if (!response.ok) throw new Error(data.error ?? "Захиалга үүсгэхэд алдаа гарлаа");
 
       setOrderId(data.order_id);
       setStep(2);
@@ -146,17 +106,12 @@ export default function Home() {
           order_id: orderId,
           customer_name: customerName,
           customer_phone: customerPhone,
-          customer_email: customerEmail,
           delivery_address: deliveryAddress,
-          notes: notes || undefined,
         }),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error ?? "Баталгаажуулахад алдаа гарлаа");
-      }
+      if (!response.ok) throw new Error(data.error ?? "Баталгаажуулахад алдаа гарлаа");
 
       setStep(4);
     } catch (err) {
@@ -180,11 +135,10 @@ export default function Home() {
         )}
 
         {step === 1 && (
-          <Step1ProductSelect
-            galleryIndex={galleryIndex}
-            setGalleryIndex={setGalleryIndex}
+          <Step1SizeSelect
             selectedKg={selectedKg}
             setSelectedKg={setSelectedKg}
+            totalAmount={totalAmount}
             isSubmitting={isSubmitting}
             onSubmit={handleStep1Submit}
           />
@@ -205,12 +159,8 @@ export default function Home() {
             setCustomerName={setCustomerName}
             customerPhone={customerPhone}
             setCustomerPhone={setCustomerPhone}
-            customerEmail={customerEmail}
-            setCustomerEmail={setCustomerEmail}
             deliveryAddress={deliveryAddress}
             setDeliveryAddress={setDeliveryAddress}
-            notes={notes}
-            setNotes={setNotes}
             isSubmitting={isSubmitting}
             onSubmit={handleStep3Submit}
           />
@@ -226,27 +176,23 @@ export default function Home() {
   );
 }
 
-/* ─── Header ─── */
-
 function BrandHeader() {
   return (
     <header className="border-b border-amber-200/50 bg-white/80 backdrop-blur-lg">
-      <div className="mx-auto flex max-w-2xl items-center gap-4 px-4 py-4 sm:px-6">
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-md shadow-amber-300/40">
-          <span className="text-base font-black text-white">T</span>
-        </div>
-        <div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-amber-600">
-            Premium Honey
-          </p>
-          <h1 className="text-xl font-bold tracking-wide text-amber-950">ТИТЭМ</h1>
+      <div className="mx-auto max-w-2xl px-4 py-5 sm:px-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-md shadow-amber-300/40">
+            <span className="text-lg font-black text-white">T</span>
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-wide text-amber-950">ТИТЭМ</h1>
+            <p className="mt-0.5 text-sm text-amber-700">{PRODUCT_NAME}</p>
+          </div>
         </div>
       </div>
     </header>
   );
 }
-
-/* ─── Step indicator ─── */
 
 function StepIndicator({ current }: { current: Step }) {
   return (
@@ -290,112 +236,25 @@ function StepIndicator({ current }: { current: Step }) {
   );
 }
 
-/* ─── Step 1 ─── */
-
-function Step1ProductSelect({
-  galleryIndex,
-  setGalleryIndex,
+function Step1SizeSelect({
   selectedKg,
   setSelectedKg,
+  totalAmount,
   isSubmitting,
   onSubmit,
 }: {
-  galleryIndex: number;
-  setGalleryIndex: (i: number) => void;
   selectedKg: number;
   setSelectedKg: (kg: number) => void;
+  totalAmount: number;
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
 }) {
   return (
-    <form onSubmit={onSubmit} className="space-y-8">
+    <form onSubmit={onSubmit} className="space-y-6">
       <SectionTitle>Бараа сонгох</SectionTitle>
 
-      {/* Gallery */}
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-lg shadow-amber-200/30 ring-1 ring-amber-200/60">
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${PRODUCT_IMAGES[galleryIndex].gradient}`}
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-7xl drop-shadow-lg">🍯</span>
-          <span className="mt-3 rounded-full bg-white/25 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-            {PRODUCT_IMAGES[galleryIndex].label}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={() =>
-            setGalleryIndex(
-              (galleryIndex - 1 + PRODUCT_IMAGES.length) % PRODUCT_IMAGES.length,
-            )
-          }
-          className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-amber-800 shadow"
-          aria-label="Өмнөх зураг"
-        >
-          ‹
-        </button>
-        <button
-          type="button"
-          onClick={() =>
-            setGalleryIndex((galleryIndex + 1) % PRODUCT_IMAGES.length)
-          }
-          className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-amber-800 shadow"
-          aria-label="Дараагийн зураг"
-        >
-          ›
-        </button>
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-          {PRODUCT_IMAGES.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setGalleryIndex(i)}
-              className={`h-1.5 rounded-full transition-all ${
-                i === galleryIndex ? "w-5 bg-white" : "w-1.5 bg-white/50"
-              }`}
-              aria-label={`Зураг ${i + 1}`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 gap-2">
-        {PRODUCT_IMAGES.map((img, i) => (
-          <button
-            key={img.label}
-            type="button"
-            onClick={() => setGalleryIndex(i)}
-            className={`aspect-square overflow-hidden rounded-lg bg-gradient-to-br ${img.gradient} ring-2 transition ${
-              i === galleryIndex ? "ring-amber-500" : "ring-transparent opacity-60"
-            }`}
-            aria-label={img.alt}
-          >
-            <span className="flex h-full items-center justify-center text-xl">🍯</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Product info */}
-      <div>
-        <h2 className="text-2xl font-bold text-amber-950">{PRODUCT_NAME}</h2>
-        <p className="mt-3 text-sm leading-relaxed text-amber-800/80">
-          Байгалийн цэвэр, химийн бодис агуулаагүй, шууд үйлдвэрлэгчээс
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {FEATURES.map((f) => (
-            <span
-              key={f}
-              className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800"
-            >
-              ✦ {f}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Package selection */}
       <div className="rounded-2xl border border-amber-100 bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold text-amber-950">Савлагаа сонгох</h3>
+        <p className="mb-4 text-center text-sm text-amber-600">Тоо хэмжээ сонгоно уу</p>
         <div className="grid grid-cols-3 gap-3">
           {PRODUCTS.map((product) => {
             const selected = selectedKg === product.kg;
@@ -404,21 +263,24 @@ function Step1ProductSelect({
                 key={product.kg}
                 type="button"
                 onClick={() => setSelectedKg(product.kg)}
-                className={`rounded-xl border-2 p-3 text-center transition ${
+                className={`rounded-xl border-2 p-4 text-center transition ${
                   selected
-                    ? "border-amber-500 bg-amber-50 shadow-sm"
+                    ? "border-amber-500 bg-amber-50 shadow-sm ring-1 ring-amber-300/40"
                     : "border-amber-100 hover:border-amber-300"
                 }`}
               >
-                <span className="block text-base font-bold text-amber-900">
-                  {product.label}
-                </span>
-                <span className="mt-0.5 block text-sm font-semibold text-amber-600">
+                <span className="block text-lg font-bold text-amber-900">{product.label}</span>
+                <span className="mt-1 block text-sm font-semibold text-amber-600">
                   {formatMNT(product.price)}
                 </span>
               </button>
             );
           })}
+        </div>
+
+        <div className="mt-5 flex items-center justify-between rounded-xl bg-amber-50 px-4 py-3">
+          <span className="text-sm font-medium text-amber-800">Нийт дүн</span>
+          <span className="text-xl font-bold text-amber-600">{formatMNT(totalAmount)}</span>
         </div>
       </div>
 
@@ -428,8 +290,6 @@ function Step1ProductSelect({
     </form>
   );
 }
-
-/* ─── Step 2 ─── */
 
 function Step2Payment({
   orderId,
@@ -444,9 +304,8 @@ function Step2Payment({
 }) {
   return (
     <div className="space-y-6">
-      <SectionTitle>Төлбөр төлөх</SectionTitle>
+      <SectionTitle>Төлбөр</SectionTitle>
 
-      {/* Order summary */}
       <div className="rounded-2xl border border-amber-100 bg-white p-5 shadow-sm">
         <dl className="space-y-3 text-sm">
           <div className="flex justify-between">
@@ -464,7 +323,7 @@ function Step2Payment({
         </dl>
       </div>
 
-      {/* QPay option */}
+      {/* QPay */}
       <div className="rounded-2xl border-2 border-blue-200 bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-sm font-black text-white">
@@ -476,9 +335,9 @@ function Step2Payment({
           </div>
         </div>
 
-        <div className="mx-auto mb-4 flex h-40 w-40 items-center justify-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50">
+        <div className="mx-auto mb-4 flex h-36 w-36 items-center justify-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50">
           <div className="text-center">
-            <div className="mx-auto mb-2 grid h-16 w-16 grid-cols-3 gap-0.5">
+            <div className="mx-auto mb-2 grid h-14 w-14 grid-cols-3 gap-0.5">
               {Array.from({ length: 9 }).map((_, i) => (
                 <div
                   key={i}
@@ -508,14 +367,13 @@ function Step2Payment({
         )}
       </div>
 
-      {/* Divider */}
       <div className="flex items-center gap-4">
         <div className="h-px flex-1 bg-amber-200" />
         <span className="text-xs font-medium text-amber-400">эсвэл</span>
         <div className="h-px flex-1 bg-amber-200" />
       </div>
 
-      {/* Bank transfer option */}
+      {/* Bank transfer */}
       <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-5">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-600 text-xs font-bold text-white">
@@ -545,17 +403,13 @@ function Step2Payment({
         </div>
       </div>
 
-      {/* Waiting for payment confirmation */}
       <div className="flex items-center justify-center gap-3 rounded-2xl border border-amber-100 bg-white px-5 py-4">
         <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-amber-300 border-t-amber-600" />
         <p className="text-sm text-amber-700">Төлбөр баталгажихыг хүлээж байна...</p>
       </div>
 
-      {/* Test-only skip — remove before production */}
       <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4">
-        <p className="mb-3 text-center text-xs text-gray-500">
-          🧪 Зөвхөн хөгжүүлэлтийн орчинд
-        </p>
+        <p className="mb-3 text-center text-xs text-gray-500">🧪 Зөвхөн тест</p>
         <button
           type="button"
           onClick={onSkipPaymentTest}
@@ -568,19 +422,13 @@ function Step2Payment({
   );
 }
 
-/* ─── Step 3 ─── */
-
 function Step3Delivery({
   customerName,
   setCustomerName,
   customerPhone,
   setCustomerPhone,
-  customerEmail,
-  setCustomerEmail,
   deliveryAddress,
   setDeliveryAddress,
-  notes,
-  setNotes,
   isSubmitting,
   onSubmit,
 }: {
@@ -588,12 +436,8 @@ function Step3Delivery({
   setCustomerName: (v: string) => void;
   customerPhone: string;
   setCustomerPhone: (v: string) => void;
-  customerEmail: string;
-  setCustomerEmail: (v: string) => void;
   deliveryAddress: string;
   setDeliveryAddress: (v: string) => void;
-  notes: string;
-  setNotes: (v: string) => void;
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
 }) {
@@ -631,18 +475,6 @@ function Step3Delivery({
         </label>
 
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-amber-800">Имэйл *</span>
-          <input
-            type="email"
-            required
-            value={customerEmail}
-            onChange={(e) => setCustomerEmail(e.target.value)}
-            placeholder="email@example.com"
-            className={inputClass}
-          />
-        </label>
-
-        <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-amber-800">
             Хүргэлтийн хаяг *
           </span>
@@ -655,19 +487,6 @@ function Step3Delivery({
             className={`${inputClass} resize-none`}
           />
         </label>
-
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-amber-800">
-            Нэмэлт тэмдэглэл
-          </span>
-          <textarea
-            rows={2}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Хүргэлтийн цаг, нэмэлт мэдээлэл..."
-            className={`${inputClass} resize-none`}
-          />
-        </label>
       </div>
 
       <button type="submit" disabled={isSubmitting} className={primaryBtnClass}>
@@ -676,8 +495,6 @@ function Step3Delivery({
     </form>
   );
 }
-
-/* ─── Step 4 ─── */
 
 function Step4ThankYou({ orderId }: { orderId: string }) {
   return (
@@ -703,8 +520,6 @@ function Step4ThankYou({ orderId }: { orderId: string }) {
     </div>
   );
 }
-
-/* ─── Shared styles ─── */
 
 const inputClass =
   "w-full rounded-xl border border-amber-100 bg-[#FFFBF5] px-4 py-3 text-amber-950 placeholder:text-amber-300 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-200/60";
