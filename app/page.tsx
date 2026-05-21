@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 const PRODUCTS = [
@@ -188,7 +189,7 @@ export default function Home() {
 function BrandHeader() {
   return (
     <header className="border-b border-amber-200/50 bg-white/80 backdrop-blur-lg">
-      <div className="mx-auto max-w-2xl px-4 py-5 sm:px-6">
+      <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-5 sm:px-6">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-md shadow-amber-300/40">
             <span className="text-lg font-black text-white">T</span>
@@ -198,6 +199,12 @@ function BrandHeader() {
             <p className="mt-0.5 text-sm text-amber-700">{PRODUCT_NAME}</p>
           </div>
         </div>
+        <Link
+          href="/admin/login"
+          className="text-xs text-gray-400 transition hover:text-gray-600"
+        >
+          Нэвтрэх
+        </Link>
       </div>
     </header>
   );
