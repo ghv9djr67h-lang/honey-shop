@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { sendOrderConfirmationEmail } from "@/lib/email/order-confirmation";
+import { sendOrderConfirmation } from "@/lib/email/order-confirmation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -130,12 +130,12 @@ export async function PATCH(request: NextRequest) {
 
     if (customer_email) {
       try {
-        await sendOrderConfirmationEmail({
-          to: customer_email,
+        await sendOrderConfirmation({
+          email: customer_email,
           name: customer_name,
           orderId: order.id,
-          quantityKg: order.quantity_kg,
-          amount: order.total_amount,
+          quantity: order.quantity_kg,
+          total: order.total_amount,
           address: delivery_address,
         });
       } catch (emailError) {
