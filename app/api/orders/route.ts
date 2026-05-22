@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { sendOrderConfirmation } from "@/lib/email/order-confirmation";
+import {
+  sendAdminOrderNotification,
+  sendOrderConfirmation,
+} from "@/lib/email/order-confirmation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -128,7 +131,30 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    console.log("[PATCH /api/orders] order updated", {
+      order_id: order.id,
+      customer_email: customer_email || "(empty)",
+      willSendCustomerEmail: Boolean(customer_email),
+      willSendAdminEmail: true,
+    });
+
+    try {
+      console.log("[PATCH /api/orders] calling sendAdminOrderNotification...");
+      await sendAdminOrderNotification({
+        name: customer_name,
+        phone: customer_phone,
+        quantity: order.quantity_kg,
+        total: order.total_amount,
+        address: delivery_address,
+        email: customer_email || undefined,
+      });
+      console.log("[PATCH /api/orders] sendAdminOrderNotification completed");
+    } catch (adminEmailError) {
+      console.error("[PATCH /api/orders] Admin email error:", adminEmailError);
+    }
+
     if (customer_email) {
+      console.log("[PATCH /api/orders] calling sendOrderConfirmation...");
       try {
         await sendOrderConfirmation({
           email: customer_email,
@@ -138,10 +164,12 @@ export async function PATCH(request: NextRequest) {
           total: order.total_amount,
           address: delivery_address,
         });
+        console.log("[PATCH /api/orders] sendOrderConfirmation completed");
       } catch (emailError) {
-        console.error("Email send error:", emailError);
-        // Order is saved — don't block confirmation if email fails
+        console.error("[PATCH /api/orders] Customer email error:", emailError);
       }
+    } else {
+      console.log("[PATCH /api/orders] skipping customer email — no customer_email");
     }
 
     return NextResponse.json({ success: true, order_id: order.id });
