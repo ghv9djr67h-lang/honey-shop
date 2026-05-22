@@ -1,105 +1,187 @@
 @import "tailwindcss";
 
 :root {
-  --honey-cream: #fff8ed;
-  --honey-ivory: #fdf6e8;
-  --honey-gold: #d4a017;
-  --honey-amber: #b8860b;
-  --honey-deep: #7c4a03;
-  --honey-brown: #3d2314;
-  --honey-dark: #2a1810;
-  --background: var(--honey-cream);
-  --foreground: var(--honey-brown);
+  --bg-black: #0a0a0a;
+  --bg-dark: #111111;
+  --bg-card: #1a1a1a;
+  --bg-card-alt: #1c1c1c;
+  --gold-muted: #c9a084;
+  --gold-mid: #e8a020;
+  --gold-bright: #f4c842;
+  --background: var(--bg-black);
+  --foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-inter);
   --font-serif: var(--font-cormorant);
 }
 
 body {
-  background: var(--honey-cream);
+  background: var(--bg-black);
   color: var(--foreground);
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
 }
 
-.honeycomb-bg {
-  background-color: #fff8ed;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cg fill='none' stroke='%23d4a017' stroke-opacity='0.08' stroke-width='1'%3E%3Cpath d='M28 1 L54 15 L54 43 L28 57 L2 43 L2 15 Z'/%3E%3Cpath d='M28 57 L54 71 L54 99 L28 113 L2 99 L2 71 Z' transform='translate(0 -14)'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 56px 100px;
-}
-
-.honeycomb-bg-dark {
-  background-color: #2a1810;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cg fill='none' stroke='%23d4a017' stroke-opacity='0.12' stroke-width='1'%3E%3Cpath d='M28 1 L54 15 L54 43 L28 57 L2 43 L2 15 Z'/%3E%3Cpath d='M28 57 L54 71 L54 99 L28 113 L2 99 L2 71 Z' transform='translate(0 -14)'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 56px 100px;
-}
-
-.gold-text {
-  background: linear-gradient(135deg, #f5d061 0%, #d4a017 40%, #b8860b 100%);
+.gold-gradient-text {
+  background: linear-gradient(135deg, #f4c842 0%, #e8a020 45%, #c9a084 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.crystal-shine {
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #f4c842 0%, #e8a020 50%, #c9a084 100%);
+}
+
+.gold-shimmer {
   background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0.15) 100%
+    110deg,
+    #1a1a1a 0%,
+    #1a1a1a 40%,
+    rgba(232, 160, 32, 0.15) 50%,
+    #1a1a1a 60%,
+    #1a1a1a 100%
   );
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease-in-out infinite;
 }
 
-.honey-drip {
-  position: relative;
-  overflow: visible;
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-.honey-drip::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 12px;
-  height: 16px;
-  background: linear-gradient(180deg, #e8a820 0%, #d4a017 100%);
-  border-radius: 0 0 50% 50%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+@keyframes pulse-gold {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(232, 160, 32, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(232, 160, 32, 0);
+  }
 }
 
-.honey-drip.selected::after {
+.btn-pulse {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.check-animate {
+  animation: check-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes bounce-down {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.scroll-bounce {
+  animation: bounce-down 2s ease-in-out infinite;
+}
+
+.product-card {
+  border: 1px solid rgba(201, 160, 132, 0.35);
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+
+.product-card:hover {
+  border-color: rgba(232, 160, 32, 0.6);
+  box-shadow: 0 0 24px rgba(232, 160, 32, 0.15);
+}
+
+.product-card.selected {
+  border-color: #e8a020;
+  box-shadow:
+    0 0 32px rgba(244, 200, 66, 0.35),
+    0 0 64px rgba(232, 160, 32, 0.15);
+}
+
+.product-card.popular {
+  border-color: rgba(244, 200, 66, 0.55);
+  box-shadow: 0 0 28px rgba(244, 200, 66, 0.2);
+}
+
+.gold-btn {
+  background: linear-gradient(135deg, #f4c842 0%, #e8a020 50%, #c9a084 100%);
+  transition:
+    filter 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.gold-btn:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(232, 160, 32, 0.35);
+}
+
+.gold-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dark-input {
+  background: #111111;
+  border: 1px solid rgba(201, 160, 132, 0.25);
+  color: #ffffff;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.dark-input::placeholder {
+  color: rgba(201, 160, 132, 0.4);
+}
+
+.dark-input:focus {
+  outline: none;
+  border-color: #e8a020;
+  box-shadow: 0 0 0 3px rgba(232, 160, 32, 0.15);
+}
+
+.checkout-col {
+  opacity: 0.35;
+  pointer-events: none;
+  filter: grayscale(0.4);
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.checkout-col.active {
   opacity: 1;
+  pointer-events: auto;
+  filter: none;
 }
 
-@keyframes honey-glow {
-  0%,
-  100% {
-    box-shadow: 0 4px 20px rgba(212, 160, 23, 0.25);
-  }
-  50% {
-    box-shadow: 0 8px 32px rgba(212, 160, 23, 0.45);
-  }
-}
-
-.honey-glow {
-  animation: honey-glow 3s ease-in-out infinite;
-}
-
-@keyframes float-bee {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-5deg);
-  }
-  50% {
-    transform: translateY(-4px) rotate(5deg);
-  }
-}
-
-.bee-float {
-  animation: float-bee 4s ease-in-out infinite;
+.checkout-col.done {
+  opacity: 0.7;
+  pointer-events: none;
+  filter: none;
 }
