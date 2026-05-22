@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const FROM = "ТИТЭМ <onboarding@resend.dev>";
+const FROM = "ТИТЭМ <noreply@acnation.net>";
 const ADMIN_EMAIL = "enhmaa@acnation.net";
 
 function getResend() {
