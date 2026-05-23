@@ -100,9 +100,9 @@ async function sendFacebookMessage(recipientId: string, text: string) {
 }
 
 async function sendInstagramMessage(senderId: string, recipientId: string, text: string) {
-  const token = process.env.INSTAGRAM_ACCESS_TOKEN?.trim();
+  const token = process.env.PAGE_ACCESS_TOKEN?.trim();
   if (!token) {
-    console.error("[webhook] INSTAGRAM_ACCESS_TOKEN is missing");
+    console.error("[webhook] PAGE_ACCESS_TOKEN is missing");
     return;
   }
 
@@ -128,6 +128,10 @@ async function sendInstagramMessage(senderId: string, recipientId: string, text:
   }
 }
 
+function isInstagramSender(senderId: string): boolean {
+  return senderId.startsWith("270") || senderId.length > 15;
+}
+
 async function handleMessage(
   event: MessengerEvent,
   platform: "page" | "instagram",
@@ -138,10 +142,20 @@ async function handleMessage(
   const text = event.message?.text?.trim();
   if (!text) return;
 
-  console.log("[webhook] message from", senderId, ":", text);
+  const isInstagram =
+    platform === "instagram" ||
+    (platform === "page" && isInstagramSender(senderId));
+
+  console.log(
+    "[webhook] message from",
+    senderId,
+    isInstagram ? "(instagram)" : "(facebook)",
+    ":",
+    text,
+  );
 
   const reply = await callClaude(text);
-  if (platform === "instagram") {
+  if (isInstagram) {
     await sendInstagramMessage(senderId, senderId, reply);
   } else {
     await sendFacebookMessage(senderId, reply);
@@ -166,9 +180,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     console.log("[webhook] body:", JSON.stringify(body));
-    const igToken = process.env.INSTAGRAM_ACCESS_TOKEN?.trim();
-    console.log("[webhook] IG token prefix:", igToken?.substring(0, 20));
-    console.log("[webhook] IG token length:", igToken?.length);
+    const pageToken = process.env.PAGE_ACCESS_TOKEN?.trim();
+    console.log("[webhook] Page token prefix:", pageToken?.substring(0, 20));
+    console.log("[webhook] Page token length:", pageToken?.length);
 
     if (body.object !== "page" && body.object !== "instagram") {
       return NextResponse.json({ status: "not a supported event" });
@@ -184,6 +198,17 @@ export async function POST(request: NextRequest) {
     for (const entry of entries) {
       const messagingEvents: MessengerEvent[] = entry.messaging ?? [];
       for (const event of messagingEvents) {
+        if (
+          body.object === "page" &&
+          event.sender?.id &&
+          isInstagramSender(event.sender.id)
+        ) {
+          console.log(
+            "[webhook] Instagram sender detected on page webhook:",
+            event.sender.id,
+          );
+          console.log("[webhook] Instagram entry:", JSON.stringify(body.entry));
+        }
         await handleMessage(event, platform);
       }
     }
