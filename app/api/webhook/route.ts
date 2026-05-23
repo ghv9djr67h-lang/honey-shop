@@ -125,10 +125,6 @@ async function sendInstagramMessage(
   console.log("[webhook] IG reply result:", result);
 }
 
-function isInstagramSender(senderId: string): boolean {
-  return senderId.startsWith("270") || senderId.length > 15;
-}
-
 async function handleMessage(
   event: MessengerEvent,
   platform: "page" | "instagram",
@@ -140,24 +136,18 @@ async function handleMessage(
   const text = event.message?.text?.trim();
   if (!text) return;
 
-  const isInstagram =
-    platform === "instagram" ||
-    (platform === "page" && isInstagramSender(senderId));
-
   console.log(
     "[webhook] message from",
     senderId,
-    isInstagram ? "(instagram)" : "(facebook)",
+    platform === "instagram" ? "(instagram)" : "(facebook)",
     ":",
     text,
   );
 
   const reply = await callClaude(text);
-  if (isInstagram) {
+  if (platform === "instagram") {
     const instagramBusinessAccountId =
-      platform === "instagram"
-        ? (event.recipient?.id ?? entryId ?? INSTAGRAM_BUSINESS_ACCOUNT_ID)
-        : INSTAGRAM_BUSINESS_ACCOUNT_ID;
+      event.recipient?.id ?? entryId ?? INSTAGRAM_BUSINESS_ACCOUNT_ID;
     await sendInstagramMessage(instagramBusinessAccountId, senderId, reply);
   } else {
     await sendFacebookMessage(senderId, reply);
@@ -200,17 +190,6 @@ export async function POST(request: NextRequest) {
     for (const entry of entries) {
       const messagingEvents: MessengerEvent[] = entry.messaging ?? [];
       for (const event of messagingEvents) {
-        if (
-          body.object === "page" &&
-          event.sender?.id &&
-          isInstagramSender(event.sender.id)
-        ) {
-          console.log(
-            "[webhook] Instagram sender detected on page webhook:",
-            event.sender.id,
-          );
-          console.log("[webhook] Instagram entry:", JSON.stringify(body.entry));
-        }
         await handleMessage(event, platform, entry.id);
       }
     }
