@@ -99,7 +99,36 @@ async function sendFacebookMessage(recipientId: string, text: string) {
   }
 }
 
-async function handleMessage(event: MessengerEvent) {
+async function sendInstagramMessage(recipientId: string, text: string) {
+  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
+  if (!token) {
+    console.error("[webhook] INSTAGRAM_ACCESS_TOKEN is missing");
+    return;
+  }
+
+  const response = await fetch(
+    `https://graph.facebook.com/v21.0/${recipientId}/messages?access_token=${token}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        recipient: { id: recipientId },
+        message: { text },
+        messaging_type: "RESPONSE",
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const err = await response.text();
+    console.error("[webhook] Instagram send error:", err);
+  }
+}
+
+async function handleMessage(
+  event: MessengerEvent,
+  platform: "page" | "instagram",
+) {
   if (event.message?.is_echo) return;
 
   const senderId = event.sender.id;
@@ -109,7 +138,11 @@ async function handleMessage(event: MessengerEvent) {
   console.log("[webhook] message from", senderId, ":", text);
 
   const reply = await callClaude(text);
-  await sendFacebookMessage(senderId, reply);
+  if (platform === "instagram") {
+    await sendInstagramMessage(senderId, reply);
+  } else {
+    await sendFacebookMessage(senderId, reply);
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -135,12 +168,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: "not a supported event" });
     }
 
+    const platform = body.object as "page" | "instagram";
     const entries = body.entry ?? [];
 
     for (const entry of entries) {
       const messagingEvents: MessengerEvent[] = entry.messaging ?? [];
       for (const event of messagingEvents) {
-        await handleMessage(event);
+        await handleMessage(event, platform);
       }
     }
 
