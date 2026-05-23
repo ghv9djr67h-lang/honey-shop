@@ -99,16 +99,9 @@ async function sendFacebookMessage(recipientId: string, text: string) {
   }
 }
 
-async function sendInstagramMessage(senderId: string, recipientId: string, text: string) {
+async function sendInstagramMessage(recipientId: string, text: string) {
   const token = process.env.PAGE_ACCESS_TOKEN?.trim();
-  if (!token) {
-    console.error("[webhook] PAGE_ACCESS_TOKEN is missing");
-    return;
-  }
-
-  console.log("[webhook] Instagram recipient ID:", recipientId);
-  console.log("[webhook] Instagram sender ID:", senderId);
-
+  console.log("[webhook] sending IG reply to:", recipientId);
   const response = await fetch(
     `https://graph.facebook.com/v21.0/me/messages?access_token=${token}`,
     {
@@ -121,11 +114,8 @@ async function sendInstagramMessage(senderId: string, recipientId: string, text:
       }),
     },
   );
-
-  if (!response.ok) {
-    const err = await response.text();
-    console.error("[webhook] Instagram send error:", err);
-  }
+  const result = await response.text();
+  console.log("[webhook] IG reply result:", result);
 }
 
 function isInstagramSender(senderId: string): boolean {
@@ -156,7 +146,7 @@ async function handleMessage(
 
   const reply = await callClaude(text);
   if (isInstagram) {
-    await sendInstagramMessage(senderId, senderId, reply);
+    await sendInstagramMessage(senderId, reply);
   } else {
     await sendFacebookMessage(senderId, reply);
   }
