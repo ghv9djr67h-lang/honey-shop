@@ -100,7 +100,7 @@ async function sendFacebookMessage(recipientId: string, text: string) {
 }
 
 async function sendInstagramMessage(recipientId: string, text: string) {
-  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
+  const token = process.env.INSTAGRAM_ACCESS_TOKEN?.trim();
   if (!token) {
     console.error("[webhook] INSTAGRAM_ACCESS_TOKEN is missing");
     return;
@@ -163,6 +163,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     console.log("[webhook] body:", JSON.stringify(body));
+    const igToken = process.env.INSTAGRAM_ACCESS_TOKEN?.trim();
+    console.log("[webhook] IG token prefix:", igToken?.substring(0, 20));
+    console.log("[webhook] IG token length:", igToken?.length);
 
     if (body.object !== "page" && body.object !== "instagram") {
       return NextResponse.json({ status: "not a supported event" });
