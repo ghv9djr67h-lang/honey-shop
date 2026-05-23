@@ -99,12 +99,15 @@ async function sendFacebookMessage(recipientId: string, text: string) {
   }
 }
 
-async function sendInstagramMessage(recipientId: string, text: string) {
+async function sendInstagramMessage(senderId: string, recipientId: string, text: string) {
   const token = process.env.INSTAGRAM_ACCESS_TOKEN?.trim();
   if (!token) {
     console.error("[webhook] INSTAGRAM_ACCESS_TOKEN is missing");
     return;
   }
+
+  console.log("[webhook] Instagram recipient ID:", recipientId);
+  console.log("[webhook] Instagram sender ID:", senderId);
 
   const response = await fetch(
     `https://graph.facebook.com/v21.0/me/messages?access_token=${token}`,
@@ -139,7 +142,7 @@ async function handleMessage(
 
   const reply = await callClaude(text);
   if (platform === "instagram") {
-    await sendInstagramMessage(senderId, reply);
+    await sendInstagramMessage(senderId, senderId, reply);
   } else {
     await sendFacebookMessage(senderId, reply);
   }
@@ -169,6 +172,10 @@ export async function POST(request: NextRequest) {
 
     if (body.object !== "page" && body.object !== "instagram") {
       return NextResponse.json({ status: "not a supported event" });
+    }
+
+    if (body.object === "instagram") {
+      console.log("[webhook] Instagram entry:", JSON.stringify(body.entry));
     }
 
     const platform = body.object as "page" | "instagram";
