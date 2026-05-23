@@ -100,9 +100,9 @@ async function sendFacebookMessage(recipientId: string, text: string) {
 }
 
 async function sendInstagramMessage(recipientId: string, text: string) {
-  const token = process.env.PAGE_ACCESS_TOKEN?.trim();
+  const token = process.env.INSTAGRAM_ACCESS_TOKEN?.trim();
   if (!token) {
-    console.error("[webhook] PAGE_ACCESS_TOKEN is missing");
+    console.error("[webhook] INSTAGRAM_ACCESS_TOKEN is missing");
     return;
   }
 
