@@ -129,9 +129,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log("[webhook] body:", JSON.stringify(body));
 
-    if (body.object !== "page") {
-      return NextResponse.json({ status: "not a page event" });
+    if (body.object !== "page" && body.object !== "instagram") {
+      return NextResponse.json({ status: "not a supported event" });
     }
 
     const entries = body.entry ?? [];
