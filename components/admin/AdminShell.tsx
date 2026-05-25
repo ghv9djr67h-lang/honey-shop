@@ -9,12 +9,12 @@ const NAV = [
   { href: "/admin/orders", label: "Захиалгууд" },
   { href: "/admin/products", label: "Бүтээгдэхүүн" },
   { href: "/admin/brand", label: "Брэнд" },
-  { href: "/admin", label: "Контент" },
+  { href: "/admin/content", label: "Контент" },
 ] as const;
 
 function isNavActive(pathname: string, href: string) {
   if (href === "/admin/dashboard") return pathname === "/admin/dashboard";
-  if (href === "/admin") return pathname === "/admin";
+  if (href === "/admin/content") return pathname === "/admin/content";
   return pathname.startsWith(href);
 }
 

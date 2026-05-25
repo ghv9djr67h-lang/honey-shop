@@ -6,11 +6,12 @@ import {
   type BrandSettings,
   type ProductSettings,
   type SettingsKey,
+  normalizeBrandSettings,
 } from "@/lib/admin/settings-defaults";
 
 async function getSetting<T>(key: SettingsKey, fallback: T): Promise<T> {
   const supabase = createServerSupabaseClient();
-  const { data } = await supabase.from("settings").select("value").eq("key", key).single();
+  const { data } = await supabase.from("settings").select("value").eq("key", key).maybeSingle();
   return (data?.value as T) ?? fallback;
 }
 
@@ -24,14 +25,15 @@ export async function GET(request: NextRequest) {
     }
 
     if (key === "brand") {
-      const value = await getSetting<BrandSettings>("brand", DEFAULT_BRAND_SETTINGS);
-      return NextResponse.json({ settings: value });
+      const raw = await getSetting<BrandSettings>("brand", DEFAULT_BRAND_SETTINGS);
+      return NextResponse.json({ settings: normalizeBrandSettings(raw) });
     }
 
-    const [product, brand] = await Promise.all([
+    const [product, brandRaw] = await Promise.all([
       getSetting<ProductSettings>("product", DEFAULT_PRODUCT_SETTINGS),
       getSetting<BrandSettings>("brand", DEFAULT_BRAND_SETTINGS),
     ]);
+    const brand = normalizeBrandSettings(brandRaw);
 
     return NextResponse.json({ product, brand });
   } catch (error) {
@@ -51,11 +53,15 @@ export async function PUT(request: NextRequest) {
     }
 
     const supabase = createServerSupabaseClient();
+    const normalizedValue =
+      key === "brand"
+        ? normalizeBrandSettings(value as BrandSettings)
+        : value;
 
     const { error } = await supabase.from("settings").upsert(
       {
         key,
-        value,
+        value: normalizedValue,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "key" },

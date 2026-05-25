@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { SiteContent } from "@/lib/site-content";
+import type { BrandSettings } from "@/lib/admin/settings-defaults";
+import type { SiteContent } from "@/lib/site-content-types";
 
 const PRODUCTS = [
   { kg: 1, price: 39000, label: "1кг", imageId: "product-1kg", popular: false },
@@ -53,7 +54,7 @@ function formatCountdown(seconds: number) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-export function HomePage({ content }: { content: SiteContent }) {
+export function HomePage({ content, brand }: { content: SiteContent; brand: BrandSettings }) {
   const features = useMemo(() => buildFeatures(content), [content]);
   const [step, setStep] = useState<Step>(1);
   const [selectedKg, setSelectedKg] = useState<number>(2);
@@ -190,42 +191,51 @@ export function HomePage({ content }: { content: SiteContent }) {
 
   return (
     <div className="min-h-full bg-[#faf8f4] pb-8 text-[#1a1208]">
-      {menuOpen && (
-        <button
-          type="button"
-          aria-label="Цэс хаах"
-          className="menu-backdrop"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
       <div className="page-wrap fade-in">
         {/* Header */}
         <header className="site-header">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <button
-                type="button"
-                onClick={() => scrollTo("hero")}
-                className="site-logo font-display text-[#1a1208]"
-              >
-                ТИТЭМ
-              </button>
-              <p className="font-body mt-2 text-xs font-light tracking-[1px] text-[#1a1208] opacity-70 sm:text-sm sm:tracking-[2px]">
-                Цэвэр Зөгийн Бал
-              </p>
+            <div className="flex min-w-0 flex-1 items-start gap-3">
+              {brand.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={brand.logo_url}
+                  alt={brand.name}
+                  className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-[#1a1208]/10"
+                />
+              ) : null}
+              <div className="min-w-0">
+                <button
+                  type="button"
+                  onClick={() => scrollTo("hero")}
+                  className="site-logo font-display text-[#1a1208]"
+                >
+                  {brand.name}
+                </button>
+                <p className="font-body mt-2 text-xs font-light tracking-[1px] text-[#1a1208] opacity-70 sm:text-sm sm:tracking-[2px]">
+                  {brand.tagline}
+                </p>
+              </div>
             </div>
-            <div className="relative shrink-0">
+            <div className="relative z-50 shrink-0">
               <button
                 type="button"
                 aria-label="Цэс нээх"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex min-h-[44px] min-w-[44px] items-center justify-center font-body text-xs tracking-[2px] text-[#1a1208] opacity-50 uppercase hover:opacity-100"
+                className="relative z-50 flex min-h-[44px] min-w-[44px] items-center justify-center font-body text-xs tracking-[2px] text-[#1a1208] opacity-50 uppercase hover:opacity-100"
               >
                 Цэс
               </button>
               {menuOpen && (
-                <div className="menu-panel absolute right-0 top-11 z-20 min-w-[180px] py-1">
+                <>
+                  <button
+                    type="button"
+                    aria-label="Цэс хаах"
+                    className="menu-backdrop fixed inset-0 z-40"
+                    onClick={() => setMenuOpen(false)}
+                  />
+                  <div className="menu-panel absolute right-0 top-11 z-50 min-w-[180px] py-1">
                   <button type="button" onClick={() => scrollTo("products")} className="block w-full px-4 py-3 text-left font-body text-sm text-[#1a1208] opacity-80 hover:opacity-100">
                     Бүтээгдэхүүн
                   </button>
@@ -237,10 +247,11 @@ export function HomePage({ content }: { content: SiteContent }) {
                       Захиалга
                     </button>
                   )}
-                  <Link href="/admin/login" className="block px-4 py-3 text-left font-body text-sm text-[#1a1208] opacity-50 hover:opacity-100" onClick={() => setMenuOpen(false)}>
+                  <Link href="/admin/login" className="relative z-50 block px-4 py-3 text-left font-body text-sm text-[#1a1208] opacity-50 hover:opacity-100" onClick={() => setMenuOpen(false)}>
                     Нэвтрэх
                   </Link>
                 </div>
+                </>
               )}
             </div>
           </div>

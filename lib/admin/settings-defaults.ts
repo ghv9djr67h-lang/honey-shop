@@ -21,8 +21,18 @@ export const DEFAULT_PRODUCT_SETTINGS: ProductSettings = {
 
 export const DEFAULT_BRAND_SETTINGS: BrandSettings = {
   name: "ТИТЭМ",
-  tagline: "Premium Honey",
+  tagline: "Цэвэр Зөгийн Бал",
   logo_url: "",
 };
 
 export type SettingsKey = "product" | "brand";
+
+type RawBrandSettings = Partial<BrandSettings> & { logo?: string };
+
+export function normalizeBrandSettings(raw: RawBrandSettings): BrandSettings {
+  return {
+    name: raw.name?.trim() || DEFAULT_BRAND_SETTINGS.name,
+    tagline: raw.tagline?.trim() || DEFAULT_BRAND_SETTINGS.tagline,
+    logo_url: raw.logo_url?.trim() || raw.logo?.trim() || DEFAULT_BRAND_SETTINGS.logo_url,
+  };
+}

@@ -12,9 +12,14 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isAdminLoggedIn()) {
       router.replace("/admin/login");
-    } else {
-      setReady(true);
+      const timeout = setTimeout(() => {
+        if (window.location.pathname.startsWith("/admin") && window.location.pathname !== "/admin/login") {
+          window.location.href = "/admin/login";
+        }
+      }, 800);
+      return () => clearTimeout(timeout);
     }
+    setReady(true);
   }, [router, pathname]);
 
   if (!ready) {

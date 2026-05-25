@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { DEFAULT_BRAND_SETTINGS, type BrandSettings } from "@/lib/admin/settings-defaults";
+import { DEFAULT_BRAND_SETTINGS, normalizeBrandSettings, type BrandSettings } from "@/lib/admin/settings-defaults";
 import { uploadImage } from "@/lib/admin/utils";
 
 export default function AdminBrandPage() {
@@ -17,7 +17,13 @@ export default function AdminBrandPage() {
     fetch("/api/admin/settings?key=brand")
       .then((r) => r.json())
       .then((d) => {
-        if (d.settings) setSettings(d.settings);
+        if (d.error) {
+          setError(d.error);
+          return;
+        }
+        if (d.settings) {
+          setSettings(normalizeBrandSettings(d.settings));
+        }
       })
       .catch(() => setError("Тохиргоо авахад алдаа гарлаа"))
       .finally(() => setLoading(false));
@@ -116,7 +122,7 @@ export default function AdminBrandPage() {
               />
             ) : (
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-xl font-bold text-amber-600">
-                T
+                {settings.name.charAt(0) || "T"}
               </div>
             )}
             <button

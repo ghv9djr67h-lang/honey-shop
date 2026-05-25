@@ -1,53 +1,55 @@
 import { supabaseAdmin } from "@/lib/supabase";
+import {
+  DEFAULT_SITE_CONTENT,
+  type SiteContent,
+} from "@/lib/site-content-types";
 
-export type SiteContent = {
-  hero_title: string;
-  hero_subtitle: string;
-  hero_price: string;
-  about_text: string;
-  delivery_text: string;
-  contact_phone: string;
-  footer_text: string;
-};
+export type { SiteContent } from "@/lib/site-content-types";
+export {
+  DEFAULT_SITE_CONTENT,
+  SITE_CONTENT_FIELDS,
+} from "@/lib/site-content-types";
 
-export const DEFAULT_SITE_CONTENT: SiteContent = {
-  hero_title: "Байгалийн Цэвэр Сархинагтай Зөгийн Бал",
-  hero_subtitle:
-    "Байгаль эхийн бүтээсэн яг тэрхүү төгс хэлбэрээрээ таны гарт хүрч буй шим тэжээлийн охь",
-  hero_price: "39,000₮",
-  about_text:
-    "Өвөрмонголын уулсын олон төрлийн зэрлэг цэцгийн шүүснээс хураасан, 100% байгалийн гаралтай зөгийн бал",
-  delivery_text: "Өнөөдөр захиалбал маргааш өдөртөө хүрнэ",
-  contact_phone: "9666-5040",
-  footer_text: "© 2026 Титэм. Бүх эрх хуулиар хамгаалагдсан.",
-};
+const SITE_CONTENT_KEY = "site_content";
 
-export const SITE_CONTENT_FIELDS: { id: keyof SiteContent; label: string }[] = [
-  { id: "hero_title", label: "Гарчиг" },
-  { id: "hero_subtitle", label: "Дэд гарчиг" },
-  { id: "hero_price", label: "Үнэ" },
-  { id: "about_text", label: "Танилцуулга" },
-  { id: "delivery_text", label: "Хүргэлт" },
-  { id: "contact_phone", label: "Утас" },
-  { id: "footer_text", label: "Footer" },
-];
+function mergeSiteContent(raw: Partial<SiteContent> | null | undefined): SiteContent {
+  return { ...DEFAULT_SITE_CONTENT, ...raw };
+}
 
 export async function getSiteContent(): Promise<SiteContent> {
   try {
-    const { data, error } = await supabaseAdmin.from("site_content").select("*");
+    const { data, error } = await supabaseAdmin
+      .from("settings")
+      .select("value")
+      .eq("key", SITE_CONTENT_KEY)
+      .maybeSingle();
 
-    if (error || !data) {
-      console.error("[site-content] fetch error:", error);
+    if (error || !data?.value) {
       return DEFAULT_SITE_CONTENT;
     }
 
-    const content = Object.fromEntries(data.map((row) => [row.id, row.value])) as Partial<
-      SiteContent
-    >;
-
-    return { ...DEFAULT_SITE_CONTENT, ...content };
-  } catch (err) {
-    console.error("[site-content] exception:", err);
+    return mergeSiteContent(data.value as Partial<SiteContent>);
+  } catch {
     return DEFAULT_SITE_CONTENT;
   }
+}
+
+export async function saveSiteContentField(
+  id: keyof SiteContent,
+  value: string,
+): Promise<{ error?: string }> {
+  const current = await getSiteContent();
+  const updated = { ...current, [id]: value };
+
+  const { error } = await supabaseAdmin.from("settings").upsert(
+    {
+      key: SITE_CONTENT_KEY,
+      value: updated,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "key" },
+  );
+
+  if (error) return { error: error.message };
+  return {};
 }
