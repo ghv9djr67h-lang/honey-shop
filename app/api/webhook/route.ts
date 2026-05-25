@@ -62,6 +62,13 @@ type MessengerEvent = {
 
 const INSTAGRAM_BUSINESS_ACCOUNT_ID = "17841433358656876";
 
+const QUICK_REPLIES = [
+  { content_type: "text", title: "Үнэ хэд вэ?", payload: "PRICE" },
+  { content_type: "text", title: "Захиалга хийх", payload: "ORDER" },
+  { content_type: "text", title: "Хүргэлтийн мэдээлэл", payload: "DELIVERY" },
+  { content_type: "text", title: "Холбоо барих", payload: "CONTACT" },
+];
+
 async function callClaudeInstagram(userMessage: string): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -141,7 +148,10 @@ async function sendFacebookMessage(recipientId: string, text: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         recipient: { id: recipientId },
-        message: { text },
+        message: {
+          text,
+          quick_replies: QUICK_REPLIES,
+        },
       }),
     },
   );
