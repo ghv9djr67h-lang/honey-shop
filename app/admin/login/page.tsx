@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { adminLogin, isAdminLoggedIn } from "@/lib/admin/auth";
+import { verifyAdminLogin } from "@/app/actions/admin-auth";
+import { isAdminLoggedIn, setAdminLoggedIn } from "@/lib/admin/auth";
 import { useState } from "react";
 
 export default function AdminLoginPage() {
@@ -16,15 +17,23 @@ export default function AdminLoginPage() {
     if (isAdminLoggedIn()) router.replace("/admin/dashboard");
   }, [router]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    if (adminLogin(username, password)) {
+    try {
+      const ok = await verifyAdminLogin(username, password);
+      if (!ok) {
+        setError("Нэр эсвэл нууц үг буруу байна");
+        return;
+      }
+
+      setAdminLoggedIn();
       router.replace("/admin/dashboard");
-    } else {
-      setError("Нэр эсвэл нууц үг буруу байна");
+    } catch {
+      setError("Нэвтрэхэд алдаа гарлаа");
+    } finally {
       setLoading(false);
     }
   }
@@ -46,9 +55,10 @@ export default function AdminLoginPage() {
             <input
               type="text"
               required
+              autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-base outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
             />
           </label>
 
@@ -57,9 +67,10 @@ export default function AdminLoginPage() {
             <input
               type="password"
               required
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-base outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
             />
           </label>
 

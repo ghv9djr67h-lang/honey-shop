@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { verifyPassword } from "@/app/actions/verify-password";
+import { useRouter } from "next/navigation";
+import { isAdminLoggedIn } from "@/lib/admin/auth";
 import { SITE_CONTENT_FIELDS, type SiteContent } from "@/lib/site-content";
-
-const CMS_SESSION_KEY = "titem_cms_session";
 
 type ContentRow = {
   id: keyof SiteContent;
@@ -14,10 +13,8 @@ type ContentRow = {
 };
 
 export default function AdminContentPage() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-  const [loginLoading, setLoginLoading] = useState(false);
+  const router = useRouter();
+  const [ready, setReady] = useState(false);
   const [rows, setRows] = useState<ContentRow[]>([]);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -26,13 +23,15 @@ export default function AdminContentPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (sessionStorage.getItem(CMS_SESSION_KEY) === "true") {
-      setAuthenticated(true);
+    if (!isAdminLoggedIn()) {
+      router.replace("/admin/login");
+      return;
     }
-  }, []);
+    setReady(true);
+  }, [router]);
 
   useEffect(() => {
-    if (!authenticated) return;
+    if (!ready) return;
 
     setLoading(true);
     fetch("/api/admin/content")
@@ -52,25 +51,7 @@ export default function AdminContentPage() {
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Ачааллахад алдаа гарлаа"))
       .finally(() => setLoading(false));
-  }, [authenticated]);
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoginError("");
-    setLoginLoading(true);
-
-    try {
-      const ok = await verifyPassword(password);
-      if (!ok) throw new Error("Нууц үг буруу байна");
-
-      sessionStorage.setItem(CMS_SESSION_KEY, "true");
-      setAuthenticated(true);
-    } catch (err) {
-      setLoginError(err instanceof Error ? err.message : "Нэвтрэхэд алдаа гарлаа");
-    } finally {
-      setLoginLoading(false);
-    }
-  }
+  }, [ready]);
 
   async function handleSave(id: keyof SiteContent) {
     setSavingId(id);
@@ -97,38 +78,10 @@ export default function AdminContentPage() {
     }
   }
 
-  if (!authenticated) {
+  if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#faf8f4] px-4">
-        <div className="w-full max-w-sm rounded-xl border border-[#e8dfd0] bg-white p-6 shadow-sm">
-          <h1 className="font-display text-2xl text-[#1a1208]">ТИТЭМ CMS</h1>
-          <p className="mt-1 font-body text-sm text-[#1a1208] opacity-60">Контент засах</p>
-
-          <form onSubmit={handleLogin} className="mt-6 space-y-4">
-            <label className="block">
-              <span className="mb-1 block font-body text-xs uppercase tracking-wide text-[#1a1208] opacity-60">
-                Нууц үг
-              </span>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="field-input"
-              />
-            </label>
-
-            {loginError && (
-              <p className="rounded border border-red-200 bg-red-50 px-3 py-2 font-body text-sm text-red-700">
-                {loginError}
-              </p>
-            )}
-
-            <button type="submit" disabled={loginLoading} className="btn-select w-full !min-h-[48px]">
-              {loginLoading ? "Шалгаж байна..." : "Нэвтрэх"}
-            </button>
-          </form>
-        </div>
+      <div className="flex min-h-screen items-center justify-center bg-[#faf8f4]">
+        <p className="font-body text-sm text-[#1a1208] opacity-60">Ачааллаж байна...</p>
       </div>
     );
   }
