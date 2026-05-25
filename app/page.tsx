@@ -14,17 +14,17 @@ const SUBTITLE = "Өвөр Монголын байгалийн бэлэг";
 
 const FEATURES = [
   {
-    icon: "🍯",
+    id: "pure",
     title: "100% Байгалийн цэвэр",
     desc: "Химийн бодис, нэмлэгүй цэвэр зөгийн бал",
   },
   {
-    icon: "📦",
+    id: "direct",
     title: "Өвөр Монголоос шууд",
     desc: "Шууд үйлдвэрүүнээс найдвартай хүргэнэ",
   },
   {
-    icon: "🚚",
+    id: "delivery",
     title: "УБ хотод үнэгүй хүргэлт",
     desc: "Таны цагийг хэмнэж, үнэгүй хүргэж өгнө",
   },
@@ -188,237 +188,156 @@ export default function Home() {
   }
 
   return (
-    <div className="relative min-h-full bg-[#0A0A0A]">
-      {/* ─── SECTION 1: HERO ─── */}
-      <section
-        id="hero"
-        className="relative flex min-h-screen flex-col bg-[#0A0A0A]"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#111111] via-[#0A0A0A] to-[#0A0A0A]" />
-
-        <div className="relative z-10 flex items-center justify-between px-6 py-6 sm:px-10 sm:py-8">
-          <button
-            type="button"
-            onClick={() => scrollTo("hero")}
-            className="font-serif text-xl font-bold tracking-[0.2em] text-[#E8A020] sm:text-2xl"
-          >
-            ТИТЭМ
-          </button>
-
-          <div className="relative">
-            <button
-              type="button"
-              aria-label="Цэс нээх"
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((o) => !o)}
-              className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border border-[#C9A084]/30 transition hover:border-[#E8A020]/60"
-            >
-              <span className={`block h-0.5 w-5 bg-[#E8A020] transition ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
-              <span className={`block h-0.5 w-5 bg-[#E8A020] transition ${menuOpen ? "opacity-0" : ""}`} />
-              <span className={`block h-0.5 w-5 bg-[#E8A020] transition ${menuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
-            </button>
-
-            {menuOpen && (
-              <div className="absolute right-0 top-12 min-w-[180px] rounded-xl border border-[#C9A084]/25 bg-[#1A1A1A] py-2 shadow-xl">
-                <button type="button" onClick={() => scrollTo("products")} className="block w-full px-4 py-2.5 text-left text-sm text-white/80 hover:text-[#F4C842]">
-                  Бүтээгдэхүүн
-                </button>
-                <button type="button" onClick={() => scrollTo("features")} className="block w-full px-4 py-2.5 text-left text-sm text-white/80 hover:text-[#F4C842]">
-                  Давуу тал
-                </button>
-                {step >= 2 && (
-                  <button type="button" onClick={() => scrollTo("checkout-section")} className="block w-full px-4 py-2.5 text-left text-sm text-white/80 hover:text-[#F4C842]">
-                    Захиалга
-                  </button>
-                )}
-                <Link
-                  href="/admin/login"
-                  className="block px-4 py-2.5 text-left text-sm text-[#C9A084]/60 hover:text-[#F4C842]"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Нэвтрэх
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="relative z-10 mx-auto flex flex-1 w-full max-w-6xl flex-col items-center gap-10 px-6 pb-24 pt-4 sm:flex-row sm:items-center sm:gap-16 sm:px-10 sm:pb-32">
-          <div className="flex-1 text-center sm:text-left">
-            <h1 className="font-serif text-[clamp(4rem,15vw,9rem)] font-bold leading-[0.9] tracking-tight gold-gradient-text">
-              ТИТЭМ
-            </h1>
-            <p className="mt-6 max-w-lg font-serif text-lg text-white/90 sm:text-xl">
-              {PRODUCT_NAME}
-            </p>
-            <p className="mt-3 text-sm tracking-wide text-[#C9A084]/80 sm:text-base">
-              {SUBTITLE}
-            </p>
-          </div>
-
-          <div className="flex flex-1 items-center justify-center">
-            <div
-              id="hero-image"
-              className="gold-shimmer relative flex h-64 w-64 items-center justify-center rounded-2xl border border-[#C9A084]/30 sm:h-80 sm:w-80"
-            >
-              <span className="text-6xl opacity-40">🥄</span>
-              <p className="absolute bottom-4 text-[10px] uppercase tracking-widest text-[#C9A084]/50">
-                Зураг оруулах
+    <div className="min-h-full bg-[#faf8f4] pb-8 text-[#1a1208]">
+      <div className="page-wrap fade-in">
+        {/* Header */}
+        <header className="site-header">
+          <div className="flex items-start justify-between">
+            <div>
+              <button type="button" onClick={() => scrollTo("hero")} className="font-display text-[48px] leading-none tracking-[4px] text-[#1a1208]">
+                ТИТЭМ
+              </button>
+              <p className="font-body mt-2 text-sm font-light tracking-[2px] text-[#1a1208] opacity-70">
+                Цэвэр Зөгийн Бал
               </p>
             </div>
+            <div className="relative pt-2">
+              <button
+                type="button"
+                aria-label="Цэс нээх"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((o) => !o)}
+                className="font-body text-xs tracking-[2px] text-[#1a1208] opacity-50 uppercase hover:opacity-100"
+              >
+                Цэс
+              </button>
+              {menuOpen && (
+                <div className="menu-panel absolute right-0 top-8 z-20 min-w-[160px] py-1">
+                  <button type="button" onClick={() => scrollTo("products")} className="block w-full px-4 py-2 text-left font-body text-sm text-[#1a1208] opacity-80 hover:opacity-100">
+                    Бүтээгдэхүүн
+                  </button>
+                  <button type="button" onClick={() => scrollTo("features")} className="block w-full px-4 py-2 text-left font-body text-sm text-[#1a1208] opacity-80 hover:opacity-100">
+                    Давуу тал
+                  </button>
+                  {step >= 2 && (
+                    <button type="button" onClick={() => scrollTo("checkout-section")} className="block w-full px-4 py-2 text-left font-body text-sm text-[#1a1208] opacity-80 hover:opacity-100">
+                      Захиалга
+                    </button>
+                  )}
+                  <Link href="/admin/login" className="block px-4 py-2 text-left font-body text-sm text-[#1a1208] opacity-50 hover:opacity-100" onClick={() => setMenuOpen(false)}>
+                    Нэвтрэх
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </header>
 
-        <button
-          type="button"
-          onClick={() => scrollTo("products")}
-          aria-label="Доош гүйлгэх"
-          className="scroll-bounce absolute bottom-8 left-1/2 z-10 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full border border-[#C9A084]/40 text-[#E8A020] transition hover:border-[#E8A020] hover:bg-[#E8A020]/10"
-        >
-          ↓
-        </button>
-      </section>
+        <StepIndicator current={step} />
 
-      {/* ─── SECTION 2: PRODUCT SELECTION ─── */}
-      <section id="products" className="bg-[#111111] px-4 py-20 sm:px-6">
-        <p className="mb-12 text-center text-xs font-semibold tracking-[0.35em] text-[#E8A020]">
-          → СОНГОХ ХЭМЖЭЭ ←
-        </p>
+        {/* Hero copy */}
+        <section id="hero" className="fade-in">
+          <p className="font-body text-sm leading-relaxed text-[#1a1208]">{PRODUCT_NAME}</p>
+          <p className="font-body mt-2 text-sm font-light text-[#1a1208] opacity-70">{SUBTITLE}</p>
+          <div id="hero-image" className="mt-6 flex h-40 items-center justify-center border border-[#e8dfd0] bg-white">
+            <span className="font-body text-xs tracking-[2px] text-[#1a1208] opacity-40 uppercase">Зураг</span>
+          </div>
+        </section>
 
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-5">
+        <hr className="site-divider" />
+
+        {/* Products */}
+        <section id="products" className="fade-in space-y-3">
+          <p className="font-body text-xs tracking-[2px] text-[#1a1208] opacity-50 uppercase">Сонгох хэмжээ</p>
           {PRODUCTS.map((product) => {
             const selected = selectedKg === product.kg;
             return (
-              <div
-                key={product.kg}
-                className={`product-card relative flex flex-col rounded-2xl bg-[#1A1A1A] p-5 sm:p-6 ${
-                  selected ? "selected" : ""
-                } ${product.popular && !selected ? "popular" : ""}`}
-              >
+              <div key={product.kg} className={`product-card ${selected ? "selected" : ""}`}>
                 {product.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-[#F4C842] to-[#E8A020] px-3 py-1 text-[9px] font-bold tracking-wide text-[#0A0A0A] sm:text-[10px]">
-                    ИХ ХАМГИЙН ИХ СОНГОЛТ
-                  </span>
+                  <span className="popular-badge mb-3">Хамгийн их сонголт</span>
                 )}
-
-                <p className="text-center font-serif text-3xl font-bold text-[#F4C842] sm:text-4xl">
-                  {product.label}
-                </p>
-                <p className="mt-1 text-center text-lg font-semibold text-[#E8A020]">
-                  {formatMNT(product.price)}
-                </p>
-
-                <div
-                  id={product.imageId}
-                  className="gold-shimmer mx-auto my-6 flex h-36 w-full max-w-[140px] items-center justify-center rounded-xl border border-[#C9A084]/20"
-                >
-                  <span className="text-4xl opacity-30">🍯</span>
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className="font-display text-2xl text-[#1a1208]">{product.label}</span>
+                  <span className="font-body text-lg font-medium text-[#c8740a]">{formatMNT(product.price)}</span>
                 </div>
-
+                <div id={product.imageId} className="my-4 flex h-24 items-center justify-center border border-[#e8dfd0] bg-white">
+                  <span className="font-body text-xs text-[#1a1208] opacity-40">Зураг</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setSelectedKg(product.kg)}
-                  className={`mt-auto w-full rounded-xl py-3 text-sm font-bold tracking-wider transition ${
-                    selected
-                      ? "gold-gradient-bg text-[#0A0A0A] shadow-lg shadow-[#E8A020]/25"
-                      : "border border-[#C9A084]/40 bg-[#1C1C1C] text-[#F4C842] hover:border-[#E8A020]/60"
-                  }`}
+                  className="btn-select !py-3"
                 >
-                  СОНГОХ
+                  {selected ? "СОНГОЛТ" : "СОНГОХ"}
                 </button>
               </div>
             );
           })}
-        </div>
-      </section>
+        </section>
 
-      {/* ─── SECTION 3: FEATURES ─── */}
-      <section id="features" className="bg-[#0A0A0A] px-4 py-20 sm:px-6">
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-5 sm:grid-cols-3">
+        <hr className="site-divider" />
+
+        {/* Features */}
+        <section id="features" className="fade-in grid grid-cols-1 gap-6 sm:grid-cols-3">
           {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-2xl border border-[#C9A084]/25 bg-[#1A1A1A] p-6 transition hover:border-[#E8A020]/50 hover:shadow-[0_0_24px_rgba(232,160,32,0.12)]"
-            >
-              <span className="text-3xl">{f.icon}</span>
-              <h3 className="mt-4 font-serif text-lg font-semibold text-[#F4C842]">
-                {f.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/60">{f.desc}</p>
+            <div key={f.id}>
+              <FeatureIcon id={f.id} />
+              <h3 className="font-display mt-3 text-base text-[#1a1208]">{f.title}</h3>
+              <p className="font-body mt-2 text-[13px] leading-relaxed text-[#1a1208] opacity-75">{f.desc}</p>
             </div>
           ))}
-        </div>
-      </section>
+        </section>
 
-      {error && (
-        <div className="mx-auto max-w-5xl px-4 pb-4 sm:px-6">
-          <div className="rounded-xl border border-red-500/40 bg-red-950/40 px-5 py-4 text-sm text-red-300">
+        {error && (
+          <div className="section-gap rounded border border-red-200 bg-red-50 px-4 py-3 font-body text-sm text-red-700">
             {error}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* ─── SECTION 4: STICKY ORDER BUTTON ─── */}
+      {/* Sticky order */}
       {step === 1 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#C9A084]/20 bg-[#0A0A0A]/95 p-4 backdrop-blur-md">
-          <button
-            type="button"
-            onClick={handleOrder}
-            disabled={isSubmitting}
-            className="btn-pulse gold-btn mx-auto block w-full max-w-5xl rounded-xl py-4 text-sm font-bold tracking-[0.15em] text-[#0A0A0A] sm:text-base"
-          >
-            {isSubmitting
-              ? "ИЛГЭЭЖ БАЙНА..."
-              : `ЗАХИАЛАХ — ${formatMNT(totalAmount)} →`}
+        <div className="bottom-bar fixed bottom-0 left-0 right-0 z-50 px-5 py-4">
+          <button type="button" onClick={handleOrder} disabled={isSubmitting} className="btn-primary mx-auto block w-full max-w-[560px]">
+            {isSubmitting ? "ИЛГЭЭЖ БАЙНА..." : `ЗАХИАЛАХ — ${formatMNT(totalAmount)} →`}
           </button>
         </div>
       )}
 
-      {/* ─── SECTION 5: CHECKOUT (3 columns) ─── */}
+      {/* Checkout */}
       {step >= 2 && (
-        <section
-          id="checkout-section"
-          className="border-t border-[#C9A084]/15 bg-[#111111] px-4 py-16 pb-28 sm:px-6 sm:py-20"
-        >
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
-            <PaymentColumn
-              active={step === 2}
-              done={step > 2}
-              orderId={orderId}
-              selectedKg={selectedKg}
-              totalAmount={totalAmount}
-              secondsLeft={paymentSecondsLeft}
-              onSkipPaymentTest={() => setStep(3)}
-            />
-
-            <DeliveryColumn
-              active={step === 3}
-              done={step > 3}
-              customerName={customerName}
-              setCustomerName={setCustomerName}
-              customerPhone={customerPhone}
-              setCustomerPhone={setCustomerPhone}
-              customerEmail={customerEmail}
-              setCustomerEmail={setCustomerEmail}
-              deliveryAddress={deliveryAddress}
-              setDeliveryAddress={setDeliveryAddress}
-              isSubmitting={isSubmitting}
-              onSubmit={handleDeliverySubmit}
-            />
-
-            <SuccessColumn
-              active={step === 4}
-              orderId={orderId}
-              onGoHome={handleGoHome}
-            />
-          </div>
+        <section id="checkout-section" className="page-wrap section-gap fade-in pb-28">
+          <PaymentColumn
+            active={step === 2}
+            done={step > 2}
+            orderId={orderId}
+            selectedKg={selectedKg}
+            totalAmount={totalAmount}
+            secondsLeft={paymentSecondsLeft}
+            onSkipPaymentTest={() => setStep(3)}
+          />
+          <hr className="site-divider" />
+          <DeliveryColumn
+            active={step === 3}
+            done={step > 3}
+            customerName={customerName}
+            setCustomerName={setCustomerName}
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            customerEmail={customerEmail}
+            setCustomerEmail={setCustomerEmail}
+            deliveryAddress={deliveryAddress}
+            setDeliveryAddress={setDeliveryAddress}
+            isSubmitting={isSubmitting}
+            onSubmit={handleDeliverySubmit}
+          />
+          <hr className="site-divider" />
+          <SuccessColumn active={step === 4} orderId={orderId} selectedKg={selectedKg} totalAmount={totalAmount} onGoHome={handleGoHome} />
         </section>
       )}
 
-      {/* ─── FOOTER ─── */}
-      <footer className={`border-t border-[#C9A084]/10 bg-[#0A0A0A] px-4 py-10 text-center ${step === 1 ? "pb-28" : ""}`}>
-        <span className="mb-3 block text-xl">🐝</span>
-        <p className="text-xs text-white/40">
+      <footer className={`page-wrap section-gap pb-10 text-center ${step === 1 ? "pb-28" : ""}`}>
+        <p className="font-body text-xs text-[#1a1208] opacity-50">
           © 2026 ТИТЭМ. Бүх эрх хуулиар хамгаалагдсан.
         </p>
       </footer>
@@ -448,118 +367,69 @@ function PaymentColumn({
   const [tab, setTab] = useState<PaymentTab>("qpay");
 
   return (
-    <div
-      className={`checkout-col rounded-2xl border border-[#C9A084]/25 bg-[#1A1A1A] p-6 ${
-        active ? "active" : done ? "done" : ""
-      }`}
-    >
-      <p className="mb-1 text-[10px] font-bold tracking-[0.3em] text-[#C9A084]/60">
-        01
-      </p>
-      <h2 className="mb-6 font-serif text-xl font-semibold text-[#F4C842]">
-        ТӨЛБӨР ТӨЛӨХ
-      </h2>
+    <div className={`checkout-col panel-card ${active ? "active" : done ? "done" : ""}`}>
+      <p className="field-label mb-1">01 — Төлбөр</p>
+      <h2 className="font-display mb-6 text-xl text-[#1a1208]">Төлбөр төлөх</h2>
 
       {done && (
-        <div className="mb-4 rounded-lg border border-[#E8A020]/30 bg-[#E8A020]/10 px-4 py-3 text-center text-sm text-[#F4C842]">
-          ✓ Төлбөр баталгаажсан
-        </div>
+        <p className="mb-4 font-body text-sm text-[var(--accent)]">✓ Төлбөр баталгаажсан</p>
       )}
 
-      <div className="mb-5 flex rounded-lg border border-[#C9A084]/20 p-1">
-        <button
-          type="button"
-          onClick={() => setTab("qpay")}
-          className={`flex-1 rounded-md py-2 text-[10px] font-bold tracking-wider transition sm:text-xs ${
-            tab === "qpay"
-              ? "gold-gradient-bg text-[#0A0A0A]"
-              : "text-[#C9A084]/70 hover:text-[#F4C842]"
-          }`}
-        >
-          QPAY QR
+      <div className="mb-6 flex">
+        <button type="button" onClick={() => setTab("qpay")} className={`tab-pill ${tab === "qpay" ? "active" : ""}`}>
+          QPay QR
         </button>
-        <button
-          type="button"
-          onClick={() => setTab("bank")}
-          className={`flex-1 rounded-md py-2 text-[10px] font-bold tracking-wider transition sm:text-xs ${
-            tab === "bank"
-              ? "gold-gradient-bg text-[#0A0A0A]"
-              : "text-[#C9A084]/70 hover:text-[#F4C842]"
-          }`}
-        >
-          БАНК ШИЛЖҮҮЛЭГ
+        <button type="button" onClick={() => setTab("bank")} className={`tab-pill ${tab === "bank" ? "active" : ""}`}>
+          Банк шилжүүлэг
         </button>
       </div>
 
       {tab === "qpay" ? (
         <>
-          <div className="mx-auto mb-4 flex h-40 w-40 items-center justify-center rounded-xl border border-dashed border-[#C9A084]/30 bg-[#111111]">
+          <div className="mb-6 flex h-40 items-center justify-center rounded border border-[#e8dfd0] bg-white">
             <div className="text-center">
               <div className="mx-auto mb-2 grid h-14 w-14 grid-cols-3 gap-0.5">
                 {Array.from({ length: 9 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`rounded-sm ${i % 2 === 0 ? "bg-[#E8A020]" : "bg-[#C9A084]"}`}
-                  />
+                  <div key={i} className={`${i % 2 === 0 ? "bg-[#e8dfd0]" : "bg-[#f0e8d8]"}`} />
                 ))}
               </div>
-              <p className="text-[10px] text-[#C9A084]/60">QR код</p>
+              <p className="font-body text-xs text-[#1a1208] opacity-50">QR код</p>
             </div>
           </div>
-
-          <p className="mb-3 text-center font-serif text-2xl font-bold gold-gradient-text">
-            {formatMNT(totalAmount)}
-          </p>
-
-          <button type="button" className="gold-btn w-full rounded-xl py-3 text-sm font-bold text-[#0A0A0A]">
-            QPay-аар төлөх
-          </button>
+          <p className="mb-4 text-center font-display text-2xl text-[#c8740a]">{formatMNT(totalAmount)}</p>
+          <button type="button" className="btn-primary w-full !px-6">QPay-аар төлөх</button>
         </>
       ) : (
-        <div className="space-y-3 text-sm">
+        <div className="space-y-3 rounded border border-[#e8dfd0] bg-white p-4 font-body text-sm">
           <div className="flex justify-between gap-2">
-            <span className="text-white/50">Данс</span>
-            <span className="font-mono font-semibold text-white">{BANK_ACCOUNT}</span>
+            <span className="text-[#1a1208] opacity-60">Данс</span>
+            <span className="font-mono text-[#1a1208]">{BANK_ACCOUNT}</span>
           </div>
-          <div className="flex justify-between gap-2 border-t border-[#C9A084]/15 pt-3">
-            <span className="text-white/50">Дүн</span>
-            <span className="font-serif text-xl font-bold gold-gradient-text">
-              {formatMNT(totalAmount)}
-            </span>
+          <div className="flex justify-between gap-2 border-t border-[#e8dfd0] pt-3">
+            <span className="text-[#1a1208] opacity-60">Дүн</span>
+            <span className="font-medium text-[#c8740a]">{formatMNT(totalAmount)}</span>
           </div>
-          <p className="rounded-lg border border-[#E8A020]/30 bg-[#E8A020]/10 px-3 py-2 text-center text-xs text-[#F4C842]">
+          <p className="pt-2 text-center text-xs text-[#1a1208] opacity-70">
             Яг {formatMNT(totalAmount)} шилжүүлнэ үү
           </p>
         </div>
       )}
 
-      <div className="mt-5 flex items-center justify-center gap-2 rounded-lg border border-[#C9A084]/20 bg-[#111111] px-4 py-3">
-        {active && (
-          <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-[#C9A084]/30 border-t-[#E8A020]" />
-        )}
-        <p className="text-xs text-[#C9A084]">
-          {active
-            ? `${formatCountdown(secondsLeft)} Төлбөр хүлээж байна...`
-            : done
-              ? "Төлбөр амжилттай"
-              : "—"}
-        </p>
+      <div className="mt-6 flex items-center gap-2 font-body text-xs text-[#1a1208] opacity-70">
+        {active && <span className="inline-block h-3 w-3 animate-spin rounded-full border border-[#e8dfd0] border-t-[#c8740a]" />}
+        {active ? `${formatCountdown(secondsLeft)} Төлбөр хүлээж байна...` : done ? "Төлбөр амжилттай" : "—"}
       </div>
 
       {orderId && (
-        <p className="mt-3 text-center text-[10px] text-[#C9A084]/40">
+        <p className="mt-3 font-body text-xs text-[#1a1208] opacity-50">
           #{formatOrderNumber(orderId)} · {selectedKg}кг
         </p>
       )}
 
       {active && (
-        <div className="mt-4 rounded-lg border border-dashed border-white/10 p-3">
-          <p className="mb-2 text-center text-[10px] text-white/30">🧪 Зөвхөн тест</p>
-          <button
-            type="button"
-            onClick={onSkipPaymentTest}
-            className="w-full rounded-lg border border-white/15 py-2 text-xs text-white/50 transition hover:border-[#E8A020]/40 hover:text-[#F4C842]"
-          >
+        <div className="mt-6 border-t border-[#e8dfd0] pt-4">
+          <p className="mb-2 text-center font-body text-xs text-[#1a1208] opacity-40">Зөвхөн тест</p>
+          <button type="button" onClick={onSkipPaymentTest} className="btn-secondary w-full !text-xs">
             Төлбөр баталгаажуулах (тест)
           </button>
         </div>
@@ -598,89 +468,32 @@ function DeliveryColumn({
   onSubmit: (e: React.FormEvent) => void;
 }) {
   return (
-    <div
-      className={`checkout-col rounded-2xl border border-[#C9A084]/25 bg-[#1A1A1A] p-6 ${
-        active ? "active" : done ? "done" : ""
-      }`}
-    >
-      <p className="mb-1 text-[10px] font-bold tracking-[0.3em] text-[#C9A084]/60">
-        02
-      </p>
-      <h2 className="mb-6 font-serif text-xl font-semibold text-[#F4C842]">
-        ХҮРГЭЛТИЙН МЭДЭЭЛЭЛ
-      </h2>
+    <div className={`checkout-col panel-card ${active ? "active" : done ? "done" : ""}`}>
+      <p className="field-label mb-1">02 — Хүргэлт</p>
+      <h2 className="font-display mb-6 text-xl text-[#1a1208]">Хүргэлтийн мэдээлэл</h2>
 
       {done && (
-        <div className="mb-4 rounded-lg border border-[#E8A020]/30 bg-[#E8A020]/10 px-4 py-3 text-center text-sm text-[#F4C842]">
-          ✓ Мэдээлэл илгээгдсэн
-        </div>
+        <p className="mb-4 font-body text-sm text-[var(--accent)]">✓ Мэдээлэл илгээгдсэн</p>
       )}
 
       <form onSubmit={onSubmit} className="space-y-4">
         <label className="block">
-          <span className="mb-1.5 block text-xs font-medium text-[#C9A084]/80">
-            Нэр *
-          </span>
-          <input
-            type="text"
-            required
-            disabled={!active}
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="Таны нэр"
-            className="dark-input w-full rounded-xl px-4 py-3 text-sm"
-          />
+          <span className="field-label">Нэр *</span>
+          <input type="text" required disabled={!active} value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Таны нэр" className="field-input" />
         </label>
-
         <label className="block">
-          <span className="mb-1.5 block text-xs font-medium text-[#C9A084]/80">
-            Утасны дугаар *
-          </span>
-          <input
-            type="tel"
-            required
-            disabled={!active}
-            value={customerPhone}
-            onChange={(e) => setCustomerPhone(e.target.value)}
-            placeholder="9911xxxx"
-            className="dark-input w-full rounded-xl px-4 py-3 text-sm"
-          />
+          <span className="field-label">Утасны дугаар *</span>
+          <input type="tel" required disabled={!active} value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="9911xxxx" className="field-input" />
         </label>
-
         <label className="block">
-          <span className="mb-1.5 block text-xs font-medium text-[#C9A084]/80">
-            И-мэйл
-          </span>
-          <input
-            type="email"
-            disabled={!active}
-            value={customerEmail}
-            onChange={(e) => setCustomerEmail(e.target.value)}
-            placeholder="И-мэйл (заавал биш)"
-            className="dark-input w-full rounded-xl px-4 py-3 text-sm"
-          />
+          <span className="field-label">И-мэйл</span>
+          <input type="email" disabled={!active} value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder="И-мэйл (заавал биш)" className="field-input" />
         </label>
-
         <label className="block">
-          <span className="mb-1.5 block text-xs font-medium text-[#C9A084]/80">
-            Хаяг *
-          </span>
-          <textarea
-            required
-            rows={3}
-            disabled={!active}
-            value={deliveryAddress}
-            onChange={(e) => setDeliveryAddress(e.target.value)}
-            placeholder="Хот, дүүрэг, хороо, байр, тоот..."
-            className="dark-input w-full resize-none rounded-xl px-4 py-3 text-sm"
-          />
+          <span className="field-label">Хаяг *</span>
+          <textarea required rows={3} disabled={!active} value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Хот, дүүрэг, хороо, байр, тоот..." className="field-input resize-none" />
         </label>
-
-        <button
-          type="submit"
-          disabled={!active || isSubmitting}
-          className="gold-btn w-full rounded-xl py-3.5 text-sm font-bold tracking-wider text-[#0A0A0A]"
-        >
+        <button type="submit" disabled={!active || isSubmitting} className="btn-primary w-full">
           {isSubmitting ? "ИЛГЭЭЖ БАЙНА..." : "ҮРГЭЛЖЛҮҮЛЭХ →"}
         </button>
       </form>
@@ -693,51 +506,105 @@ function DeliveryColumn({
 function SuccessColumn({
   active,
   orderId,
+  selectedKg,
+  totalAmount,
   onGoHome,
 }: {
   active: boolean;
   orderId: string;
+  selectedKg: number;
+  totalAmount: number;
   onGoHome: () => void;
 }) {
   return (
-    <div
-      className={`checkout-col rounded-2xl border border-[#C9A084]/25 bg-[#1A1A1A] p-6 ${
-        active ? "active" : ""
-      }`}
-    >
-      <p className="mb-1 text-[10px] font-bold tracking-[0.3em] text-[#C9A084]/60">
-        03
-      </p>
-      <h2 className="mb-6 font-serif text-xl font-semibold text-[#F4C842]">
-        ЗАХИАЛГА АМЖИЛТТАЙ
-      </h2>
-
+    <div className={`checkout-col panel-card ${active ? "active" : ""}`}>
       {active ? (
-        <div className="flex flex-col items-center py-4 text-center">
-          <div className="check-animate mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#F4C842] bg-[#E8A020]/15 text-3xl text-[#F4C842]">
-            ✓
-          </div>
-          <p className="font-serif text-lg text-white/90">
-            Таны захиалга амжилттай баталгаажлаа!
+        <div>
+          <h2 className="font-display text-[56px] leading-none text-[#1a1208]">Баярлалаа</h2>
+          <hr className="site-divider !mt-6 !mb-8" />
+          <p className="font-body mb-6 text-sm text-[#1a1208] opacity-75">
+            Таны захиалга амжилттай баталгаажлаа
           </p>
           {orderId && (
-            <p className="mt-4 font-mono text-sm tracking-widest text-[#E8A020]">
-              #{formatOrderNumber(orderId)}
-            </p>
+            <table className="summary-table">
+              <tbody>
+                <tr>
+                  <th>Захиалгын дугаар</th>
+                  <td className="font-mono">#{formatOrderNumber(orderId)}</td>
+                </tr>
+                <tr>
+                  <th>Хэмжээ</th>
+                  <td>{selectedKg}кг</td>
+                </tr>
+                <tr>
+                  <th>Нийт дүн</th>
+                  <td className="font-medium text-[var(--accent)]">{formatMNT(totalAmount)}</td>
+                </tr>
+                <tr>
+                  <th>Бүтээгдэхүүн</th>
+                  <td className="text-[#1a1208] opacity-75">{PRODUCT_NAME}</td>
+                </tr>
+              </tbody>
+            </table>
           )}
-          <button
-            type="button"
-            onClick={onGoHome}
-            className="gold-btn mt-8 w-full rounded-xl py-3.5 text-sm font-bold tracking-wider text-[#0A0A0A]"
-          >
+          <button type="button" onClick={onGoHome} className="btn-primary mt-8 w-full">
             НҮҮР ХУУДАС РУУ
           </button>
         </div>
       ) : (
-        <p className="py-8 text-center text-sm text-white/30">
-          Захиалга дууссаны дараа энд харагдана
-        </p>
+        <div>
+          <p className="field-label mb-1">03 — Баталгаажуулалт</p>
+          <p className="font-body py-8 text-sm text-[#1a1208] opacity-40">
+            Захиалга дууссаны дараа энд харагдана
+          </p>
+        </div>
       )}
     </div>
+  );
+}
+
+const STEP_LABELS = ["Сонгох", "Төлбөр", "Хүргэлт", "Баярлалаа"] as const;
+
+function StepIndicator({ current }: { current: Step }) {
+  return (
+    <div className="step-row">
+      {STEP_LABELS.map((label, i) => {
+        const num = (i + 1) as Step;
+        const done = num < current;
+        const active = num === current;
+        return (
+          <div key={label} className={`step-node ${done ? "done" : ""}`}>
+            <div className={`step-circle ${done ? "done" : ""} ${active ? "active" : ""}`}>
+              {done ? "✓" : num}
+            </div>
+            <span className={`step-name ${active ? "active" : ""}`}>{label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function FeatureIcon({ id }: { id: string }) {
+  const stroke = "#1a1208";
+  if (id === "pure") {
+    return (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M12 3C8 8 5 11 5 14a7 7 0 1014 0c0-3-3-6-7-11z" stroke={stroke} strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (id === "direct") {
+    return (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="4" y="8" width="16" height="12" rx="1" stroke={stroke} strokeWidth="1.5" />
+        <path d="M4 11h16" stroke={stroke} strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M3 12h14M13 7l5 5-5 5" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }

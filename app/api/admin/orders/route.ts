@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     const { data: orders, error } = await supabase
       .from("orders")
       .select("*")
+      .or("payment_status.eq.confirmed,status.neq.pending")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -65,6 +66,29 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ success: true, order });
   } catch (error) {
     console.error("Admin orders PATCH error:", error);
+    return NextResponse.json({ error: "Серверийн алдаа гарлаа" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const orderId = request.nextUrl.searchParams.get("id");
+    if (!orderId) {
+      return NextResponse.json({ error: "Захиалгын ID олдсонгүй" }, { status: 400 });
+    }
+
+    const supabase = createServerSupabaseClient();
+
+    const { error } = await supabase.from("orders").delete().eq("id", orderId);
+
+    if (error) {
+      console.error("Order delete error:", error);
+      return NextResponse.json({ error: "Захиалга устгахад алдаа гарлаа" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Admin orders DELETE error:", error);
     return NextResponse.json({ error: "Серверийн алдаа гарлаа" }, { status: 500 });
   }
 }

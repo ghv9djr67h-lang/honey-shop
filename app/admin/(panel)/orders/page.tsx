@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import {
   formatDate,
   formatMNT,
@@ -25,16 +25,39 @@ export default function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  async function loadOrders() {
+    const res = await fetch("/api/admin/orders");
+    const d = await res.json();
+    if (d.error) throw new Error(d.error);
+    setOrders(d.orders);
+  }
+
   useEffect(() => {
-    fetch("/api/admin/orders")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.error) setError(d.error);
-        else setOrders(d.orders);
-      })
+    loadOrders()
       .catch(() => setError("Ачааллахад алдаа гарлаа"))
       .finally(() => setLoading(false));
   }, []);
+
+  async function deleteOrder(order: Order, e: MouseEvent) {
+    e.stopPropagation();
+    if (!confirm("Захиалгыг устгах уу?")) return;
+
+    setMessage("");
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/orders?id=${encodeURIComponent(order.id)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      if (selected?.id === order.id) setSelected(null);
+      await loadOrders();
+      setMessage("Захиалга амжилттай устгагдлаа");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Алдаа гарлаа");
+    }
+  }
 
   async function updateStatus(orderId: string, status: string) {
     setSaving(true);
@@ -82,6 +105,7 @@ export default function AdminOrdersPage() {
                   <th className="px-4 py-3">Статус</th>
                   <th className="px-4 py-3">Төлбөр</th>
                   <th className="px-4 py-3">Огноо</th>
+                  <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -109,6 +133,15 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500">
                       {formatDate(order.created_at)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={(e) => deleteOrder(order, e)}
+                        className="rounded px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                      >
+                        Устгах
+                      </button>
                     </td>
                   </tr>
                 ))}
