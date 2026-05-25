@@ -20,6 +20,12 @@ export const metadata: Metadata = {
     "ТИТЭМ — байгалийн цэвэр, химийн бодис агуулаагүй монгол зөгийн бал",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

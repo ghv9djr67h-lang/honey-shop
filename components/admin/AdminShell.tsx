@@ -5,13 +5,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { adminLogout } from "@/lib/admin/auth";
 
 const NAV = [
-  { href: "/admin", label: "Хяналтын самбар" },
+  { href: "/admin/dashboard", label: "Хяналтын самбар" },
   { href: "/admin/orders", label: "Захиалгууд" },
   { href: "/admin/products", label: "Бүтээгдэхүүн" },
   { href: "/admin/brand", label: "Брэнд" },
+  { href: "/admin", label: "Контент" },
 ] as const;
 
 function isNavActive(pathname: string, href: string) {
+  if (href === "/admin/dashboard") return pathname === "/admin/dashboard";
   if (href === "/admin") return pathname === "/admin";
   return pathname.startsWith(href);
 }

@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isAdminLoggedIn()) router.replace("/admin");
+    if (isAdminLoggedIn()) router.replace("/admin/dashboard");
   }, [router]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -22,7 +22,7 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     if (adminLogin(username, password)) {
-      router.replace("/admin");
+      router.replace("/admin/dashboard");
     } else {
       setError("Нэр эсвэл нууц үг буруу байна");
       setLoading(false);

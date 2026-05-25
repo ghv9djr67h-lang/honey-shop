@@ -26,6 +26,13 @@ body {
   color: #1a1208;
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   font-weight: 300;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .font-display {
@@ -324,12 +331,32 @@ body {
 .bottom-bar {
   background: #faf8f4;
   border-top: 1px solid #e8dfd0;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
 
 .menu-panel {
   background: white;
   border: 1px solid var(--border);
   border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(26, 18, 8, 0.08);
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: transparent;
+}
+
+.site-logo {
+  font-size: clamp(2rem, 10vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0.12em;
+}
+
+.checkout-title {
+  font-size: clamp(2rem, 12vw, 3.5rem);
+  line-height: 1;
 }
 
 .summary-table {
@@ -358,4 +385,107 @@ body {
 
 .summary-table td {
   color: #1a1208;
+}
+
+@media (max-width: 639px) {
+  .page-wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .site-header {
+    padding-top: 28px;
+    padding-bottom: 20px;
+  }
+
+  .site-divider {
+    margin: 24px 0;
+  }
+
+  .section-gap {
+    margin-top: 32px;
+  }
+
+  .step-row {
+    margin: 24px 0 32px;
+  }
+
+  .step-circle {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .step-node:not(:last-child)::after {
+    top: 12px;
+    left: calc(50% + 12px);
+    width: calc(100% - 24px);
+  }
+
+  .step-name {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+    max-width: 56px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .product-card,
+  .panel-card {
+    padding: 16px;
+  }
+
+  .field-input {
+    font-size: 16px;
+    padding: 14px 16px;
+  }
+
+  .btn-primary {
+    padding: 14px 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    min-height: 48px;
+  }
+
+  .btn-select {
+    min-height: 48px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+
+  .tab-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tab-pill {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 12px;
+    min-height: 44px;
+  }
+
+  .tab-pill + .tab-pill {
+    margin-left: 0;
+  }
+
+  .summary-table {
+    font-size: 13px;
+  }
+
+  .summary-table th,
+  .summary-table td {
+    padding: 10px 0;
+    vertical-align: top;
+  }
+
+  .summary-table th {
+    width: 42%;
+    padding-right: 8px;
+  }
+
+  .summary-table td {
+    word-break: break-word;
+  }
 }
