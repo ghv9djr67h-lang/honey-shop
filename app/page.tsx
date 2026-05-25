@@ -340,6 +340,9 @@ export default function Home() {
         <p className="font-body text-xs text-[#1a1208] opacity-50">
           © 2026 ТИТЭМ. Бүх эрх хуулиар хамгаалагдсан.
         </p>
+        <p style={{ fontSize: "12px", color: "#888", marginTop: "16px" }}>
+          © 2026 Акүйста нэйшн ХХК. Бүх эрх хуулиар хамгаалагдсан.
+        </p>
       </footer>
     </div>
   );
